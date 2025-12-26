@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="CloudReady.API/CloudReady.API.csproj" />
+  <Project Path="CloudReady.Application/CloudReady.Application.csproj" />
+  <Project Path="CloudReady.Domain/CloudReady.Domain.csproj" />
+  <Project Path="CloudReady.Infrastructure/CloudReady.Infrastructure.csproj" />
+</Solution>
