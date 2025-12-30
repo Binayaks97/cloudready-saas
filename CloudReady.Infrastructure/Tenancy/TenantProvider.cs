@@ -1,13 +1,11 @@
 ﻿using CloudReady.Application.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CloudReady.Infrastructure.Tenancy
 {
     public class TenantProvider : ITenantProvider
     {
         private string? _tenantCode;
+        private bool _isAdmin;
 
         public void SetTenant(string tenantCode)
         {
@@ -20,6 +18,16 @@ namespace CloudReady.Infrastructure.Tenancy
                 throw new Exception("Tenant not resolved");
 
             return _tenantCode;
+        }
+
+        public void SetIsAdmin(bool isAdmin)
+        {
+            _isAdmin = isAdmin;
+        }
+
+        public bool IsAdmin()
+        {
+            return _isAdmin;
         }
     }
 }

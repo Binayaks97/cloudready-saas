@@ -1,5 +1,6 @@
 ﻿using CloudReady.API.Middleware;
 using CloudReady.Application.Interfaces;
+using CloudReady.Domain.Securities;
 using CloudReady.Infrastructure.Persistence;
 using CloudReady.Infrastructure.Security;
 using CloudReady.Infrastructure.Tenancy;
@@ -90,10 +91,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     };
 });
 
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("RequireAdmin", policy =>
+        policy.RequireRole(Roles.Admin, Roles.Owner))
+    .AddPolicy("RequireOwner", policy =>
+        policy.RequireRole(Roles.Owner));
+
 // Tenant services
 builder.Services.AddScoped<TenantProvider>();
 builder.Services.AddScoped<ITenantProvider>(sp =>
     sp.GetRequiredService<TenantProvider>());
+builder.Services.AddHttpContextAccessor();
 
 // PasswordHasher services
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
