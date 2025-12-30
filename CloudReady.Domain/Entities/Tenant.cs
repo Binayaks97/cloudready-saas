@@ -9,8 +9,8 @@ namespace CloudReady.Domain.Entities
 {
     public class Tenant : BaseEntity
     {
-        public string Name { get; set; } = null!;
-        public string Subdomain { get; set; } = null!;
+        public string Code { get; set; } = default!;
+        public string Name { get; set; } = default!;
         public string Plan { get; set; } = "Free";
         public bool IsActive { get; set; } = true;
     }

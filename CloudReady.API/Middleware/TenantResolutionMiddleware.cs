@@ -1,4 +1,5 @@
-﻿using CloudReady.Infrastructure.Tenancy;
+﻿using CloudReady.Application.Interfaces;
+using CloudReady.Infrastructure.Tenancy;
 
 namespace CloudReady.API.Middleware
 {
@@ -11,17 +12,16 @@ namespace CloudReady.API.Middleware
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context, TenantProvider tenantProvider)
+        public async Task InvokeAsync(HttpContext context, ITenantProvider tenantProvider)
         {
-            if (!context.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantIdValue) ||
-                !Guid.TryParse(tenantIdValue, out var tenantId))
+            if (!context.Request.Headers.TryGetValue("X-Tenant-Code", out var tenantCode))
             {
                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                await context.Response.WriteAsync("Tenant Id is missing or invalid.");
+                await context.Response.WriteAsync("X-Tenant-Code header is required");
                 return;
             }
 
-            tenantProvider.SetTenant(tenantId);
+            tenantProvider.SetTenant(tenantCode!);
             await _next(context);
         }
     }

@@ -26,8 +26,8 @@ namespace CloudReady.Infrastructure.Persistence
         {
             modelBuilder.Entity<User>()
                 .HasQueryFilter(u =>
-                    _tenantProvider.GetTenantId() == Guid.Empty ||
-                    u.TenantId == _tenantProvider.GetTenantId());
+                    string.IsNullOrEmpty(_tenantProvider.GetTenantCode()) ||
+                    u.TenantCode == _tenantProvider.GetTenantCode());
 
             base.OnModelCreating(modelBuilder);
         }

@@ -7,19 +7,19 @@ namespace CloudReady.Infrastructure.Tenancy
 {
     public class TenantProvider : ITenantProvider
     {
-        private Guid _tenantId;
+        private string? _tenantCode;
 
-        public void SetTenant(Guid tenantId)
+        public void SetTenant(string tenantCode)
         {
-            _tenantId = tenantId;
+            _tenantCode = tenantCode;
         }
 
-        public Guid GetTenantId()
+        public string GetTenantCode()
         {
-            if (_tenantId == Guid.Empty)
+            if (string.IsNullOrWhiteSpace(_tenantCode))
                 throw new Exception("Tenant not resolved");
 
-            return _tenantId;
+            return _tenantCode;
         }
     }
 }

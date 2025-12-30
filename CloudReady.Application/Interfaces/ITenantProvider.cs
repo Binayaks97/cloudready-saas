@@ -6,6 +6,7 @@ namespace CloudReady.Application.Interfaces
 {
     public interface ITenantProvider
     {
-        Guid GetTenantId();
+        void SetTenant(string tenantCode);
+        string GetTenantCode();
     }
 }
