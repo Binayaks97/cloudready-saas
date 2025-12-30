@@ -124,7 +124,7 @@ app.UseHttpsRedirection();
 // Tenant middleware
 app.UseMiddleware<TenantResolutionMiddleware>();
 
-app.UseAuthentication();
+app.UseAuthentication();   // MUST be before authorization
 app.UseAuthorization();
 
 app.MapControllers();

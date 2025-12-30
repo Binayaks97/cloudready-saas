@@ -4,6 +4,7 @@ using CloudReady.Domain.Entities;
 using CloudReady.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace CloudReady.API.Controllers
@@ -35,14 +36,23 @@ namespace CloudReady.API.Controllers
         }
 
         [HttpPost("login")]
-        [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
-        public ActionResult<AuthResponse> Login([FromBody] LoginRequest request)
+        public async Task<IActionResult> Login(LoginRequest request, AppDbContext db, IPasswordHasher hasher, IJwtTokenService jwt, ITenantProvider tenantProvider)
         {
-            return Ok(new AuthResponse
-            {
-                Token = "dummy-token",
-                ExpiresAt = DateTime.UtcNow.AddHours(1)
-            });
+            var tenantCode = tenantProvider.GetTenantCode();
+
+            var user = await db.Users.FirstOrDefaultAsync(u =>
+                u.Email == request.Email &&
+                u.TenantCode == tenantCode);
+
+            if (user == null)
+                return Unauthorized("Invalid credentials");
+
+            if (!hasher.Verify(request.Password, user.PasswordHash))
+                return Unauthorized("Invalid credentials");
+
+            var token = jwt.GenerateToken(user, tenantCode);
+
+            return Ok(token);
         }
 
         [Authorize]

@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CloudReady.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/test")]
     public class TestController : ControllerBase
@@ -9,7 +11,7 @@ namespace CloudReady.API.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok("Tenant resolved successfully");
+            return Ok("Protected endpoint working");
         }
     }
 }
