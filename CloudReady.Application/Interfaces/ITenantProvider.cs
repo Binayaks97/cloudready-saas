@@ -8,5 +8,8 @@ namespace CloudReady.Application.Interfaces
     {
         void SetTenant(string tenantCode);
         string GetTenantCode();
+
+        void SetIsAdmin(bool isAdmin);
+        bool IsAdmin();
     }
 }

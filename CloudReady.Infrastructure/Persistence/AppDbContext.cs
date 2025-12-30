@@ -1,9 +1,6 @@
 ﻿using CloudReady.Application.Interfaces;
 using CloudReady.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CloudReady.Infrastructure.Persistence
 {
@@ -19,14 +16,15 @@ namespace CloudReady.Infrastructure.Persistence
             _tenantProvider = tenantProvider;
         }
 
-        public DbSet<Tenant> Tenants => Set<Tenant>();
         public DbSet<User> Users => Set<User>();
+        public DbSet<Tenant> Tenants => Set<Tenant>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // 🔒 Tenant isolation with admin bypass
             modelBuilder.Entity<User>()
                 .HasQueryFilter(u =>
-                    string.IsNullOrEmpty(_tenantProvider.GetTenantCode()) ||
+                    _tenantProvider.IsAdmin() ||
                     u.TenantCode == _tenantProvider.GetTenantCode());
 
             base.OnModelCreating(modelBuilder);

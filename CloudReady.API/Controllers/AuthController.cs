@@ -1,6 +1,7 @@
 ﻿using CloudReady.Application.DTOs.Auth;
 using CloudReady.Application.Interfaces;
 using CloudReady.Domain.Entities;
+using CloudReady.Domain.Securities;
 using CloudReady.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,43 +15,53 @@ namespace CloudReady.API.Controllers
     public class AuthController : ControllerBase
     {
         [HttpPost("register")]
-        public async Task<ActionResult<AuthResponse>> Register([FromBody] RegisterRequest request, [FromServices] AppDbContext db, [FromServices] IPasswordHasher hasher, [FromServices] IJwtTokenService jwt, [FromServices] ITenantProvider tenantProvider)
+        public async Task<IActionResult> Register(
+            RegisterRequest request,
+            AppDbContext db,
+            IPasswordHasher hasher,
+            IJwtTokenService jwt,
+            ITenantProvider tenantProvider)
         {
             var tenantCode = tenantProvider.GetTenantCode();
 
             var user = new User
             {
+                Id = Guid.NewGuid(),
                 Email = request.Email,
                 PasswordHash = hasher.Hash(request.Password),
-                TenantCode = tenantCode
+                Role = Roles.User,                 // ✅ DEFAULT ROLE
+                TenantId = Guid.Empty,
+                TenantCode = tenantCode,
+                CreatedOn = DateTime.UtcNow
             };
 
             db.Users.Add(user);
             await db.SaveChangesAsync();
 
-            return Ok(new AuthResponse
-            {
-                Token = jwt.GenerateToken(user, tenantCode),
-                ExpiresAt = DateTime.UtcNow.AddMinutes(60)
-            });
+            var token = jwt.GenerateToken(user);
+
+            return Ok(token);
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginRequest request, AppDbContext db, IPasswordHasher hasher, IJwtTokenService jwt, ITenantProvider tenantProvider)
+        public async Task<IActionResult> Login(
+            LoginRequest request,
+            AppDbContext db,
+            IPasswordHasher hasher,
+            IJwtTokenService jwt,
+            ITenantProvider tenantProvider)
         {
             var tenantCode = tenantProvider.GetTenantCode();
 
-            var user = await db.Users.FirstOrDefaultAsync(u =>
-                u.Email == request.Email &&
-                u.TenantCode == tenantCode);
+            var user = await db.Users
+                .FirstOrDefaultAsync(u =>
+                    u.Email == request.Email &&
+                    u.TenantCode == tenantCode);
 
-            if (user == null)
-                return Unauthorized("Invalid credentials");
+            if (user == null || !hasher.Verify(request.Password, user.PasswordHash))
+                return Unauthorized();
 
-            if (!hasher.Verify(request.Password, user.PasswordHash))
-                return Unauthorized("Invalid credentials");
-
-            var token = jwt.GenerateToken(user, tenantCode);
+            var token = jwt.GenerateToken(user);
 
             return Ok(token);
         }

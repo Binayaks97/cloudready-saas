@@ -1,4 +1,5 @@
-﻿using CloudReady.Domain.Entities;
+﻿using CloudReady.Application.DTOs.Auth;
+using CloudReady.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace CloudReady.Application.Interfaces
 {
     public interface IJwtTokenService
     {
-        string GenerateToken(User user, string tenantCode);
+        AuthResponse GenerateToken(User user);
     }
 }
