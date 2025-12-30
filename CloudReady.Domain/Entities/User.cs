@@ -9,9 +9,10 @@ namespace CloudReady.Domain.Entities
 {
     public class User : BaseEntity
     {
-        public string Email { get; set; } = null!;
-        public string PasswordHash { get; set; } = null!;
-        public string Role { get; set; } = "User";
+        public string Email { get; set; } = default!;
+        public string PasswordHash { get; set; } = default!;
+        public string TenantCode { get; set; } = default!;
+        public string? Role { get; set; }
         public bool IsActive { get; set; } = true;
     }
 }

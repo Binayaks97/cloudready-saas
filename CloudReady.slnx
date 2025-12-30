@@ -3,4 +3,5 @@
   <Project Path="CloudReady.Application/CloudReady.Application.csproj" />
   <Project Path="CloudReady.Domain/CloudReady.Domain.csproj" />
   <Project Path="CloudReady.Infrastructure/CloudReady.Infrastructure.csproj" />
+  <Project Path="JWT Key Generation/JWT Key Generation.csproj" Id="79959c91-62e7-4583-86bf-360d5ef4cb7c" />
 </Solution>
